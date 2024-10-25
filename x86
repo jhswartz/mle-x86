@@ -14,7 +14,7 @@ rel8()
 		delta=$((-(OFFSET - target + 1)))
 	fi
 
-	u8 $((delta & 0xff))
+	u8 $delta
 }
 
 rel16()
@@ -29,7 +29,7 @@ rel16()
 		delta=$((-(OFFSET - target + 2)))
 	fi
 
-	u16 $((delta & 0xffff))
+	u16 $delta
 }
 
 rel32()
@@ -44,7 +44,7 @@ rel32()
 		delta=$((-(OFFSET - target + 4)))
 	fi
 
-	u32 $((delta & 0xffffffff))
+	u32 $delta
 }
 
 MACROS="rel8 rel16 rel32 $MACROS"
