@@ -1,0 +1,98 @@
+.TH MLE-X86 7 "January 2026" "MLE-X86" "Macro Library"
+.SH NAME
+mle-x86 \- x86 relative offset calculation macros for mle
+.SH DESCRIPTION
+.B mle-x86
+is a macro library for the \fBmle\fR(1) encoder that provides functions to calculate 8-bit, 16-bit, and 32-bit relative offsets for use in x86 (and amd64) branch instructions.
+
+.SH INTEGRATION
+To use these macros in an \fBmle\fR source file, include the library using the dot operator at the beginning of your source:
+.PP
+.B [ . x86 ]
+
+.SH MACROS
+The following macros accept a single argument, \fILABEL\fR, which must be a valid \fBmle\fR label (forward or backward reference).
+
+.TP
+.B rel8 \fILABEL\fR
+Calculates an 8-bit signed relative offset.
+
+.TP
+.B rel16 \fILABEL\fR
+Calculates a 16-bit signed little-endian relative offset.
+
+.TP
+.B rel32 \fILABEL\fR
+Calculates a 32-bit signed little-endian relative offset.
+
+.SH INSTALLATION
+The library file \fBx86\fR should be placed in the shared \fBmle\fR directory so it can be found by the encoder's import search path. The best way to achieve this is to ensure \fBmle-x86\fR setup shares the same PREFIX as the local \fBmle\fR installation.
+
+.TP
+.B Default Location
+/usr/local/share/mle/x86
+
+.SH EXAMPLE
+The following \fBmli-amd64\fR(1) program demonstrates the use of \fBrel8\fR for conditional loops and branching.
+
+.nf
+[ . x86 ]
+
+Magic:
+        90
+
+Start:
+        59                              # pop rcx
+        5e                              # pop rsi
+        56 5f                           # mov rsi rdi
+
+        # Terminate if argc <= 1
+        83 f9 01                        # cmp 1 ecx
+        7e [ rel8 Terminate ]           # jle Terminate
+
+Echo:
+        # Quit if next arg is NULL
+        5e                              # pop rsi
+        85 f6                           # test esi esi
+        74 [ rel8 Quit ]                # jz Quit
+
+        # Get string length
+        56 5f                           # mov rsi rdi
+        31 c0                           # xor eax eax
+        6a ff 59                        # mov -1 rcx
+        f2 ae                           # repnz scasb
+        f7 d1                           # not ecx
+
+        # Overwrite NUL with SPACE
+        48 ff cf                        # dec rdi
+        c6 07 20                        # mov ' ' (rdi)
+
+        # More args?
+        39 04 24                        # cmp eax (rsp)
+        75 [ rel8 Print ]               # jnz Print
+
+Terminate:
+        # Overwrite with LF
+        c6 07 0a                        # mov '\\n' (rdi)
+
+Print:
+        89 ca                           # mov ecx edx
+        6a 01 5f                        # mov STDOUT_FILENO rdi
+        8b c7                           # mov SYS_WRITE rax
+        0f 05                           # syscall
+
+        # Loop
+        eb [ rel8 Echo ]                # jmp Echo
+
+Quit:
+        31 ff                           # mov EXIT_SUCCESS rdi
+        6a 3c 58                        # mov SYS_EXIT rax
+        0f 05                           # syscall
+.fi
+
+.SH SEE ALSO
+.BR mle (1),
+.BR mli-amd64 (1)
+
+.SH AUTHOR
+Justin Swartz <justin.swartz@risingedge.co.za>

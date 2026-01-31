@@ -1,0 +1,102 @@
+MLE-X86(7)                       Macro Library                      MLE-X86(7)
+
+NAME
+       mle-x86 - x86 relative offset calculation macros for mle
+
+DESCRIPTION
+       mle-x86  is  a macro library for the mle(1) encoder that provides func‐
+       tions to calculate 8-bit, 16-bit, and 32-bit relative offsets  for  use
+       in x86 (and amd64) branch instructions.
+
+INTEGRATION
+       To  use  these  macros in an mle source file, include the library using
+       the dot operator at the beginning of your source:
+
+       [ . x86 ]
+
+MACROS
+       The following macros accept a single argument, LABEL, which must  be  a
+       valid mle label (forward or backward reference).
+
+       rel8 LABEL
+              Calculates an 8-bit signed relative offset.
+
+       rel16 LABEL
+              Calculates a 16-bit signed little-endian relative offset.
+
+       rel32 LABEL
+              Calculates a 32-bit signed little-endian relative offset.
+
+INSTALLATION
+       The library file x86 should be placed in the shared mle directory so it
+       can be found by the encoder's import  search  path.  The  best  way  to
+       achieve  this  is to ensure mle-x86 setup shares the same PREFIX as the
+       local mle installation.
+
+       Default Location
+              /usr/local/share/mle/x86
+
+EXAMPLE
+       The following mli-amd64(1) program demonstrates the  use  of  rel8  for
+       conditional loops and branching.
+
+       [ . x86 ]
+
+       Magic:
+               90
+
+       Start:
+               59                              # pop rcx
+               5e                              # pop rsi
+               56 5f                           # mov rsi rdi
+
+               # Terminate if argc <= 1
+               83 f9 01                        # cmp 1 ecx
+               7e [ rel8 Terminate ]           # jle Terminate
+
+       Echo:
+               # Quit if next arg is NULL
+               5e                              # pop rsi
+               85 f6                           # test esi esi
+               74 [ rel8 Quit ]                # jz Quit
+
+               # Get string length
+               56 5f                           # mov rsi rdi
+               31 c0                           # xor eax eax
+               6a ff 59                        # mov -1 rcx
+               f2 ae                           # repnz scasb
+               f7 d1                           # not ecx
+
+               # Overwrite NUL with SPACE
+               48 ff cf                        # dec rdi
+               c6 07 20                        # mov ' ' (rdi)
+
+               # More args?
+               39 04 24                        # cmp eax (rsp)
+               75 [ rel8 Print ]               # jnz Print
+
+       Terminate:
+               # Overwrite with LF
+               c6 07 0a                        # mov '\n' (rdi)
+
+       Print:
+               89 ca                           # mov ecx edx
+               6a 01 5f                        # mov STDOUT_FILENO rdi
+               8b c7                           # mov SYS_WRITE rax
+               0f 05                           # syscall
+
+               # Loop
+               eb [ rel8 Echo ]                # jmp Echo
+
+       Quit:
+               31 ff                           # mov EXIT_SUCCESS rdi
+               6a 3c 58                        # mov SYS_EXIT rax
+               0f 05                           # syscall
+
+SEE ALSO
+       mle(1), mli-amd64(1)
+
+AUTHOR
+       Justin Swartz <justin.swartz@risingedge.co.za>
+
+MLE-X86                          January 2026                       MLE-X86(7)
