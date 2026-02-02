@@ -4,9 +4,9 @@ NAME
        mle-x86 - x86 relative offset calculation macros for mle
 
 DESCRIPTION
-       mle-x86  is  a macro library for the mle(1) encoder that provides func‐
-       tions to calculate 8-bit, 16-bit, and 32-bit relative offsets  for  use
-       in x86 (and amd64) branch instructions.
+       mle-x86 is a macro library for mle(1) that provides functions to calcu‐
+       late relative offsets for x86 branch instructions and position-indepen‐
+       dent references.
 
 INTEGRATION
        To  use  these  macros in an mle source file, include the library using
@@ -18,26 +18,41 @@ MACROS
        The following macros accept a single argument, LABEL, which must  be  a
        valid mle label (forward or backward reference).
 
-       rel8 LABEL
+       off8 LABEL
               Calculates an 8-bit signed relative offset.
 
-       rel16 LABEL
+       off16 LABEL
               Calculates a 16-bit signed little-endian relative offset.
 
+       off32 LABEL
+              Calculates a raw 32-bit signed little-endian relative offset.
+
+       off64 LABEL
+              Calculates a raw 64-bit signed little-endian relative offset.
+
+       rel8 LABEL
+              Calculates  an  8-bit  signed relative offset with a 1-byte dis‐
+              placement.
+
+       rel16 LABEL
+              Calculates a 16-bit signed little-endian relative offset with  a
+              2-byte displacement.
+
        rel32 LABEL
-              Calculates a 32-bit signed little-endian relative offset.
+              Calculates  a 32-bit signed little-endian relative offset with a
+              4-byte displacement.
 
 INSTALLATION
        The library file x86 should be placed in the shared mle directory so it
-       can be found by the encoder's import  search  path.  The  best  way  to
-       achieve  this  is to ensure mle-x86 setup shares the same PREFIX as the
+       can  be  found  by  the  encoder's  import search path. The best way to
+       achieve this is to ensure mle-x86 setup shares the same PREFIX  as  the
        local mle installation.
 
        Default Location
               /usr/local/share/mle/x86
 
 EXAMPLE
-       The following mli-amd64(1) program demonstrates the  use  of  rel8  for
+       The  following  mli-amd64(1)  program  demonstrates the use of rel8 for
        conditional loops and branching.
 
        [ . x86 ]
