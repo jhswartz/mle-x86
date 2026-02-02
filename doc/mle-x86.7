@@ -3,7 +3,7 @@
 mle-x86 \- x86 relative offset calculation macros for mle
 .SH DESCRIPTION
 .B mle-x86
-is a macro library for the \fBmle\fR(1) encoder that provides functions to calculate 8-bit, 16-bit, and 32-bit relative offsets for use in x86 (and amd64) branch instructions.
+is a macro library for \fBmle\fR(1) that provides functions to calculate relative offsets for x86 branch instructions and position-independent references.
 
 .SH INTEGRATION
 To use these macros in an \fBmle\fR source file, include the library using the dot operator at the beginning of your source:
@@ -14,16 +14,32 @@ To use these macros in an \fBmle\fR source file, include the library using the d
 The following macros accept a single argument, \fILABEL\fR, which must be a valid \fBmle\fR label (forward or backward reference).
 
 .TP
-.B rel8 \fILABEL\fR
+.B off8 \fILABEL\fR
 Calculates an 8-bit signed relative offset.
 
 .TP
-.B rel16 \fILABEL\fR
+.B off16 \fILABEL\fR
 Calculates a 16-bit signed little-endian relative offset.
 
 .TP
+.B off32 \fILABEL\fR
+Calculates a raw 32-bit signed little-endian relative offset.
+
+.TP
+.B off64 \fILABEL\fR
+Calculates a raw 64-bit signed little-endian relative offset.
+
+.TP
+.B rel8 \fILABEL\fR
+Calculates an 8-bit signed relative offset with a 1-byte displacement.
+
+.TP
+.B rel16 \fILABEL\fR
+Calculates a 16-bit signed little-endian relative offset with a 2-byte displacement.
+
+.TP
 .B rel32 \fILABEL\fR
-Calculates a 32-bit signed little-endian relative offset.
+Calculates a 32-bit signed little-endian relative offset with a 4-byte displacement.
 
 .SH INSTALLATION
 The library file \fBx86\fR should be placed in the shared \fBmle\fR directory so it can be found by the encoder's import search path. The best way to achieve this is to ensure \fBmle-x86\fR setup shares the same PREFIX as the local \fBmle\fR installation.

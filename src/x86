@@ -2,49 +2,11 @@ macro u16 u16le '$@'
 macro u32 u32le '$@'
 macro u64 u64le '$@'
 
-rel8()
-{
-	local target=$(resolve $1)
-	local delta=
+macro off8  u8  '$(offset $@)'
+macro off16 u16 '$(offset $@)'
+macro off32 u32 '$(offset $@)'
+macro off64 u64 '$(offset $@)'
 
-	if [ $((target)) -gt $OFFSET ]
-	then
-		delta=$((target - OFFSET - 1))
-	else
-		delta=$((-(OFFSET - target + 1)))
-	fi
-
-	u8 $delta
-}
-
-rel16()
-{
-	local target=$(resolve $1)
-	local delta=
-
-	if [ $((target)) -gt $OFFSET ]
-	then
-		delta=$((target - OFFSET - 2))
-	else
-		delta=$((-(OFFSET - target + 2)))
-	fi
-
-	u16 $delta
-}
-
-rel32()
-{
-	local target=$(resolve $1)
-	local delta=
-
-	if [ $((target)) -gt $OFFSET ]
-	then
-		delta=$((target - OFFSET - 4))
-	else
-		delta=$((-(OFFSET - target + 4)))
-	fi
-
-	u32 $delta
-}
-
-MACROS="rel8 rel16 rel32 $MACROS"
+macro rel8  u8  '$(offset $@ 1)'
+macro rel16 u16 '$(offset $@ 2)'
+macro rel32 u32 '$(offset $@ 4)'
